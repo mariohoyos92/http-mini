@@ -31,7 +31,9 @@ class App extends Component {
 
   getVehicles() {
     axios.get(`https://joes-autos.herokuapp.com/api/vehicles`)
-      .then((response) => this.setState({vehiclesToDisplay: response.data}))
+      .then((response) =>{ if (response.status === 200) {
+        ToastStore.success('Success!', 3000)
+      } this.setState({vehiclesToDisplay: response.data})})
   }
 
   getPotentialBuyers() {
@@ -41,7 +43,7 @@ class App extends Component {
 
   sellCar(id) {
     axios.delete(`https://joes-autos.herokuapp.com/api/vehicles/` + id)
-    .then((response) => this.setState([{vehiclesToDisplay: response.data}]))
+    .then((response) => this.setState([{vehiclesToDisplay: response.data.vehicles}]))
   }
 
   filterByMake() {
@@ -58,8 +60,8 @@ class App extends Component {
   }
 
   updatePrice(id, priceChange) {
-    axios.put("https://joes-autos.herokuapp.com/api/vehicle/" + id + "/" + priceChange)
-    .then((response) => this.setState({vehiclesToDisplay: response.data}))
+    axios.put("https://joes-autos.herokuapp.com/api/vehicles/" + id + "/" + priceChange)
+    .then((response) => this.setState({vehiclesToDisplay: response.data.vehicles})).catch(console.log)
   }
 
   addCar(){
@@ -106,7 +108,7 @@ byYear() {
 resetData(dataToReset) {
   axios.get('https://joes-autos.herokuapp.com/api/' + dataToReset + '/reset')
     .then( res => {
-      if (dataToReset == 'vehicles') {
+      if (dataToReset === 'vehicles') {
         this.setState({
           vehiclesToDisplay: res.data
         })
@@ -131,7 +133,7 @@ resetData(dataToReset) {
           <p>Price: { v.price }</p>
           <button
             className='btn btn-sp'
-            onClick={ () => this.updatePrice(v.id,'up') }
+            onClick={ () => this.updatePrice(v.id,'up')}
             >Increase Price</button>
           <button
             className='btn btn-sp'
